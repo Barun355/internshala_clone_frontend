@@ -20,7 +20,7 @@ const id=params.get("q")
   const [data,setData] =useState([])
 useEffect(()=>{
    const fetchData= async()=>{
-  const response=await axios.get(`https://internshala-clone-backend-uits.onrender.com/api/job/${id}`)
+  const response=await axios.get(`${process.env.REACT_APP_BACKEND_API}/job/${id}`)
   
   const {company,category}=response.data;
   setCompany(company)
@@ -50,7 +50,7 @@ const text=document.getElementById("text")
       Application:id
     }
   
-    await axios.post("https://internshala-clone-backend-uits.onrender.com/api/application",bodyJson).then((res)=>{
+    await axios.post(`${process.env.REACT_APP_BACKEND_API}/application`,bodyJson).then((res)=>{
 
 
       
@@ -75,19 +75,19 @@ const text=document.getElementById("text")
 
  <p className='text-xl font-bold mt-4'> {data.title}</p>
  <p className='text-sm text-slate-300 font-bold'>{data.title}</p>
- <p> <i class="bi bi-geo-alt-fill"></i> {data.location}</p>
+ <p> <i className="bi bi-geo-alt-fill"></i> {data.location}</p>
  </div>
  <div className="flex tedxt-sm justify-between">
-  <p className='mt-3 text-slate-400'> <i class="bi bi-play-circle-fill"></i>   Start Date  <br />  {data.StartDate}</p>
+  <p className='mt-3 text-slate-400'> <i className="bi bi-play-circle-fill"></i>   Start Date  <br />  {data.StartDate}</p>
 
 
-  <p className='mt-3 text-slate-400' > <i class="bi bi-calendar-check-fill"></i>  Experience  <br />
+  <p className='mt-3 text-slate-400' > <i className="bi bi-calendar-check-fill"></i>  Experience  <br />
   {data.Experience}</p>
 
-  <p className='mt-3 text-slate-400'>  <i class="bi bi-cash"></i>   Salary <br /> {data.CTC}</p>
+  <p className='mt-3 text-slate-400'>  <i className="bi bi-cash"></i>   Salary <br /> {data.CTC}</p>
    </div>
    <div className="flex">
-    <p className='bg-green-100 rounded-md ml-4 text-green-300'> <i class="bi bi-clock"></i> 12/12/2012</p>
+    <p className='bg-green-100 rounded-md ml-4 text-green-300'> <i className="bi bi-clock"></i> 12/12/2012</p>
    </div>
    <hr />
    <div className="aboutCompany flex justify-start">

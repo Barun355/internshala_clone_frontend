@@ -5,25 +5,90 @@ import "./navbar.css";
 import Sidebar from "./Sidebar";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { auth, provider } from "../../firebase/firebase";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../../Feature/Userslice";
 import { useNavigate } from "react-router-dom";
+import { checkEdge, client_device_detail } from "../../utils/client_detail";
+import { setLoginHistory } from "../../Feature/LoginHistorySlice";
+import axios from "axios";
+import { toast } from "react-toastify";
+
 function Navbar() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const [isDivVisibleForintern, setDivVisibleForintern] = useState(false);
   const [isDivVisibleForJob, setDivVisibleFroJob] = useState(false);
   const [isDivVisibleForlogin, setDivVisibleFrologin] = useState(false);
   const [isDivVisibleForProfile, setDivVisibleProfile] = useState(false);
   const [isStudent, setStudent] = useState(true);
+
+  const client_det = client_device_detail();
+  const emailVerified = useSelector(
+    (state) => state.loginHistory.isEmailVerified
+  );
+
   const loginFunction = () => {
-    signInWithPopup(auth, provider)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const current_time = new Date();
+    const hour = current_time.getHours();
+    const isEdge = checkEdge();
+
+    alert(
+      `The client is ${client_det.isMobile ? "Mobile" : "System"} os is ${
+        client_det.os
+      } and browser is ${
+        !isEdge ? client_det.browser : "Edge"
+      } and time is ${hour}`
+    );
+    console.log(
+      "activated setLoginHistory(): action",
+      client_det.isMobile,
+      client_det.browser,
+      client_det.os
+    );
+
+    dispatch(setLoginHistory({ ...client_det }));
+
+    if (
+      (hour > 9 && hour < 14 && client_det.isMobile) ||
+      !client_det.isMobile
+    ) {
+      if (
+        !isEdge &&
+        client_det.browser.toLocaleLowerCase() === "chrome" &&
+        !emailVerified
+      ) {
+        navigate("/verifyEmail");
+      } else {
+        signInWithPopup(auth, provider)
+          .then((res) => {
+            axios
+              .post(
+                `${process.env.REACT_APP_BACKEND_API}/login-history/setLoginHistory`,
+                {
+                  ...client_det,
+                  browser: isEdge ? "Edg" : client_det.browser,
+                  userID: auth?.currentUser?.uid,
+                }
+              )
+              .then((res) => {
+                if (res?.data?.success === true)
+                  toast.success(
+                    `Welcome to our Platform ${auth?.currentUser?.displayName}`
+                  );
+              })
+              .catch((err) => {
+                toast.error(`Some Error occured`);
+              });
+            navigate("/");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    } else {
+      alert("Mobile is not allowed to login before 10am and after 1pm");
+    }
     setDivVisibleFrologin(false);
   };
 
@@ -77,7 +142,7 @@ function Navbar() {
         <ul>
           <div className="img">
             <Link to={"/"}>
-              <img src={logo} alt="" srcset="" />
+              <img src={logo} alt="" srcSet="" />
             </Link>
           </div>
           <div className="elem">
@@ -89,7 +154,7 @@ function Navbar() {
                 <i
                   onClick={hideInternShips}
                   id="ico"
-                  class="bi bi-caret-down-fill"
+                  className="bi bi-caret-down-fill"
                 ></i>
               </p>
             </Link>
@@ -98,7 +163,7 @@ function Navbar() {
               <p onMouseEnter={showJobs}>
                 Jobs{" "}
                 <i
-                  class="bi bi-caret-down-fill"
+                  className="bi bi-caret-down-fill"
                   id="ico2"
                   onClick={hideJobs}
                 ></i>
@@ -106,7 +171,7 @@ function Navbar() {
             </Link>
           </div>
           <div className="search">
-            <i class="bi bi-search"></i>
+            <i className="bi bi-search"></i>
             <input type="text" placeholder="Search" />
           </div>
           {user ? (
@@ -144,7 +209,7 @@ function Navbar() {
           {user ? (
             <>
               <button className="bt-log" id="bt" onClick={logoutFunction}>
-                Logout <i class="bi bi-box-arrow-right"></i>
+                Logout <i className="bi bi-box-arrow-right"></i>
               </button>
             </>
           ) : (
@@ -201,7 +266,7 @@ function Navbar() {
         {isDivVisibleForlogin && (
           <>
             <button id="cross" onClick={closeLogin}>
-              <i class="bi bi-x"></i>
+              <i className="bi bi-x"></i>
             </button>
             <h5 id="state" className="mb-4 justify-center text-center">
               <span
@@ -226,14 +291,13 @@ function Navbar() {
               <>
                 <div className="py-6">
                   <div className="flex bg-white rounded-lg justify-center overflow-hidden mx-auto max-w-sm lg:max-w-4xl">
-                    <div className="w-full p-8 lg:w-1/2">
+                    <div className="w-full p-8">
                       <p
                         onClick={loginFunction}
-                        className="flex
- items-center h-9 justify-center mt-4 text-white bg-slate-100 rounded-lg hover:bg-gray-100"
+                        className="flex items-center px-10 py-4 justify-center cursor-pointer mt-4 text-white bg-slate-100 rounded-lg hover:bg-gray-100"
                       >
                         <div className="px-4 py-3">
-                          <svg class="h-6 w-6" viewBox="0 0 40 40">
+                          <svg className="h-6 w-6" viewBox="0 0 40 40">
                             <path
                               d="M36.3425 16.7358H35V16.6667H20V23.3333H29.4192C28.045 27.2142 24.3525 30 20 30C14.4775 30 10 25.5225 10 20C10 14.4775 14.4775 9.99999 20 9.99999C22.5492 9.99999 24.8683 10.9617 26.6342 12.5325L31.3483 7.81833C28.3717 5.04416 24.39 3.33333 20 3.33333C10.7958 3.33333 3.33335 10.7958 3.33335 20C3.33335 29.2042 10.7958 36.6667 20 36.6667C29.2042 36.6667 36.6667 29.2042 36.6667 20C36.6667 18.8825 36.5517 17.7917 36.3425 16.7358Z"
                               fill="#FFC107"
@@ -262,27 +326,27 @@ function Navbar() {
                         </p>
                         <span className="border-b- w-1/5 lg:w-1/4"></span>
                       </div>
-                      <div class="mt-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">
+                      <div className="mt-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2">
                           Email{" "}
                         </label>
                         <input
-                          class=" text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
+                          className=" text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
                           type="email"
                           placeholder="john@example.com"
                         />
                       </div>
-                      <div class="mt-4">
-                        <div class="flex justify-between">
-                          <label class="block text-gray-700 text-sm font-bold mb-2">
+                      <div className="mt-4">
+                        <div className="flex justify-between">
+                          <label className="block text-gray-700 text-sm font-bold mb-2">
                             Password
                           </label>
-                          <a href="/" class="text-xs text-blue-500">
+                          <a href="/" className="text-xs text-blue-500">
                             Forget Password?
                           </a>
                         </div>
                         <input
-                          class=" text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
+                          className=" text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
                           placeholder="Must be atleast 6 characters"
                           type="password"
                         />
@@ -320,27 +384,27 @@ function Navbar() {
               <>
                 <div className="flex bg-white rounded-lg justify-center overflow-hidden mx-auto max-w-sm lg:max-w-4xl">
                   <div className="w-full p-8 lg:w-1/2">
-                    <div class="mt-4">
-                      <label class="block text-gray-700 text-sm font-bold mb-2">
+                    <div className="mt-4">
+                      <label className="block text-gray-700 text-sm font-bold mb-2">
                         Email{" "}
                       </label>
                       <input
-                        class=" text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
+                        className=" text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
                         type="email"
                         placeholder="john@example.com"
                       />
                     </div>
-                    <div class="mt-4">
-                      <div class="flex justify-between">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">
+                    <div className="mt-4">
+                      <div className="flex justify-between">
+                        <label className="block text-gray-700 text-sm font-bold mb-2">
                           Password
                         </label>
-                        <a href="/" class="text-xs text-blue-500">
+                        <a href="/" className="text-xs text-blue-500">
                           Forget Password?
                         </a>
                       </div>
                       <input
-                        class=" text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
+                        className=" text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
                         placeholder="Must be atleast 6 characters"
                         type="password"
                       />

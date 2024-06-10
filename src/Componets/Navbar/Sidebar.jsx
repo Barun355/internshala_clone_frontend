@@ -56,9 +56,9 @@ function Sidebar() {
                 <Link to={"/profile"}>
                   <img
                     className="rounded-full justify-center"
-                    src={user.photo}
+                    src={user?.photo}
                     alt=""
-                    srcset=""
+                    srcSet=""
                   />
                 </Link>
                 <p className=" text-center">
@@ -97,12 +97,12 @@ function Sidebar() {
                   <p>More</p>
                 </Link>
                 <button className="bt-log" id="bt" onClick={logoutFunction}>
-                  Logout <i class="bi bi-box-arrow-right"></i>
+                  Logout <i className="bi bi-box-arrow-right"></i>
                 </button>
                 <br />
                 <br />
                 <button onClick={logoutFunction}>
-                  Log Out <i class="bi bi-box-arrow-right"></i>
+                  Log Out <i className="bi bi-box-arrow-right"></i>
                 </button>
               </div>
             </>
@@ -127,7 +127,7 @@ function Sidebar() {
         </div>
 
         <div className="search2">
-          <i class="bi bi-search"></i>
+          <i className="bi bi-search"></i>
           <input type="search" placeholder="Search" />
         </div>
 

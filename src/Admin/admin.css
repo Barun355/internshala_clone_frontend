@@ -1,21 +1,28 @@
-.bt3{
-    color: white;
-    outline: #078edd 2px solid;
-    background-color: #078edd;
-    border: none;
-    width: 70px;
-       margin-left: 78px;
-    height: 25px;
-    font-size: 16px;
-    border-radius: 2px;
+.bt3 {
+  color: white;
+  outline: #078edd 2px solid;
+  background-color: #078edd;
+  border: none;
+  width: 70px;
+  margin-left: 78px;
+  height: 25px;
+  font-size: 16px;
+  border-radius: 2px;
 }
 @media only screen and (max-width: 768px) {
-.hide{
+  .hide {
     display: none;
-}
   }
+}
 @media only screen and (min-width: 768px) {
-.show{
+  .show {
     display: none;
-}
   }
+}
+
+label {
+  font-size: 22px;
+  font-family: monospace;
+  font-weight: 700;
+  text-transform: capitalize;
+}

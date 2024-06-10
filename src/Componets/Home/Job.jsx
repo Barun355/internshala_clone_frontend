@@ -11,7 +11,7 @@ function Job() {
     useEffect(()=>{
         const fetchData= async()=>{
             try {
-            const response= await axios.get(`https://internshala-clone-backend-uits.onrender.com/api/job`)
+            const response= await axios.get(`${process.env.REACT_APP_BACKEND_API}/job`)
             setJobData(response.data)
         } catch (error) {
                console.log(error) 
@@ -69,14 +69,14 @@ filterInternShips.map(( data,index)=>(
 <small className='text-slate-400 text-sm'>{data.company}</small>
    
         <hr className='mt-5' />
-        <p className='mt-3' ><i class="bi bi-geo-alt-fill"></i> {data.location}  </p>
-        <p className='mt-1'> <i class="bi bi-cash-stack"></i> {data.CTC}</p>
-        <p className='mt-1'><i class="bi bi-calendar-fill"></i> {data.Experience}</p>
+        <p className='mt-3' ><i className="bi bi-geo-alt-fill"></i> {data.location}  </p>
+        <p className='mt-1'> <i className="bi bi-cash-stack"></i> {data.CTC}</p>
+        <p className='mt-1'><i className="bi bi-calendar-fill"></i> {data.Experience}</p>
         <div className='more flex justify-between mt-6'>
             <span className='bg-slate-200 text-slate-400 w-20 rounded-sm text-center'>Job</span>
   <Link to={`detailjob?q=${data._id}`}>
    <span className='text-blue-500 mr-2'> 
-View details <i class="bi bi-chevron-right"></i>
+View details <i className="bi bi-chevron-right"></i>
    </span></Link>
         </div>
         </div>

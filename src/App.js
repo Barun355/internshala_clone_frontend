@@ -20,17 +20,20 @@ import Postinternships from './Admin/Postinternships';
 import PostJobs from './Admin/PostJob';
 import DeatilApplication from './Applications/DeatilApplication';
 import UserApplicatiom from './profile/UserApplicatiom';
-import UserapplicationDetail from "./Applications/DeatilApplicationUser"
+import UserapplicationDetail from "./Applications/DeatilApplicationUser";
+import VerifyEmail from "./Componets/VerifyEmail";
+
+
 function App() {
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
+
   useEffect(() => {
     auth.onAuthStateChanged((authUser) => {
       if (authUser) {
         dispatch(login({
-
           uid: authUser.uid,
-          photo: authUser.photoURL,
+          photo: authUser?.photoURL,
           name: authUser.displayName,
           email: authUser.email,
           phoneNumber: authUser.phoneNumber
@@ -41,12 +44,10 @@ function App() {
       }
     })
   }, [dispatch]);
+
   return (
     <div className="App">
       <Navbar />
-
-
-
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/register' element={<Register />} />
@@ -59,10 +60,11 @@ function App() {
         <Route path='/adminLogin' element={<AdminLogin />} />
         <Route path='/adminepanel' element={<Adminpanel />} />
         <Route path='/postInternship' element={<Postinternships />} />
-        <Route path='/postJon' element={<PostJobs />} />
+        <Route path='/postJob' element={<PostJobs />} />
         <Route path='/applications' element={<ViewAllApplication />} />
         <Route path='/UserapplicationDetail' element={< UserapplicationDetail />} />
         <Route path='/userapplication' element={<UserApplicatiom />} />
+        <Route path='/verifyEmail' element={<VerifyEmail />} />
       </Routes>
       <Footer />
     </div>
